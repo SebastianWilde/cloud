@@ -1,0 +1,4 @@
+https://blog.puneethabm.com/inverted-index-mapreduce-program/
+$hadoop jar org.puneetha-0.0.1-SNAPSHOT.jar org.puneetha.InvertedIndex.WordcountDriver /hadoop/path/to/input /hadoop/path/to/output
+
+$hadoop fs -cat /InvertedIndex/Output/*

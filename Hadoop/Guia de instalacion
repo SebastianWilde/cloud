@@ -1,0 +1,160 @@
+Instalar Hadoop
+https://www.youtube.com/watch?v=Y6oit3rCsZo
+http://howto.gandasoftwarefactory.com/desarrollo-software/2014/como-instalar-apache-hadoop-ubuntu-linux-20141209/
+
+1) update repositorios
+sudo apt-get update
+
+2) Install java:
+(sudo apt-get purge openjdk*)
+(sudo add-apt-repository ppa:webupd8team/java)
+(sudo apt-get update)
+sudo apt-get install oracle-java8-installer
+(ok - yes)
+java -version
+
+3) export java
+
+sudo nano /etc/profile
+(al final del archivo)
+export JAVA_HOME=/usr
+
+4) load de file
+source /etc/profile
+
+5)Dissable Ipv6
+sudo nano /etc/sysctl.conf
+(al final)
+# disable ipv6
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+
+6) reboot
+
+7)Add a group and user
+sudo addgroup hadoopgroup
+
+sudo adduser --ingroup hadoopgroup hduser (clave 0000)
+
+8) install ssh
+sudo apt-get install ssh
+
+9) Enable
+sudo systemctl enable ssh
+
+10) Start ssh
+sudo systemctl start ssh
+
+11)login hduser and conf
+su - hduser
+ssh-keygen -t rsa -P ""
+cat /home/hduser/.ssh/id_rsa.pub >> /home/hduser/.ssh/authorized_keys
+cd .ssh/
+chmod 600 ./authorized_keys
+ssh-copy-id -i /home/hduser/.ssh/id_rsa.pub localhost
+ssh localhost(testing)
+
+12)Install hadoop 2.9
+cd ..
+wget http://www-eu.apache.org/dist/hadoop/common/hadoop-2.9.0/hadoop-2.9.0.tar.gz
+tar -xvf hadoop-2.9.0.tar.gz
+exit(ir al usuario original)
+cd /home/hduser/
+sudo mv ./hadoop-2.9.0 /usr/local/
+
+13) Conf hadoop
+sudo ln -sf /usr/local/hadoop-2.9.0/ /usr/local/hadoop (crear link)
+sudo chown -R hduser:hadoopgroup /usr/local/hadoop-2.9.0/
+su - hduser
+nano ./.bashrc 
+
+#Hadoop config
+export HADOOP_PREFIX=/usr/local/hadoop
+export HADOOP_HOME=/usr/local/hadoop
+export HADOOP_MAPRED_HOME=${HADOOP_HOME}
+export HADOOP_COMMON_HOME=${HADOOP_HOME}
+export HADOOP_HDFS_HOME=${HADOOP_HOME}
+export YARN_HOME=${HADOOP_HOME}
+export HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
+
+#Native path
+export HADOOP_COMMON_LIB_NATIVE_DIR=${HADOOP_HOME}/lib/native
+export HADOOP_OPTS="-Djava.library.path=$HADOOP_PREFIX/lib/native"
+
+#Java path
+export JAVA_HOME="/usr"
+#OS path
+export PATH=$PATH:$HADOOP_HOME/bin:$JAVA_HOME/bin:$HADOOP_HOME/sbin
+
+source ./.bashrc
+
+14)Check if is correct
+/usr/local/hadoop/bin/hadoop version
+
+15)
+nano /usr/local/hadoop/etc/hadoop/hadoop-env.sh
+export JAVA_HOME="/usr"
+
+16)conf core-site.xml
+cd /usr/local/hadoop/etc/hadoop
+nano core-site.xml
+
+<configuration>
+<property>
+        <name>fs.default.name</name>
+                <value>hdfs://localhost:9000</value>
+</property>
+</configuration>
+
+nano hdfs-site.xml
+
+<property>
+	<name>dfs.replication</name>
+	<value>1</value>
+</property>
+
+<property>
+<name>dfs.name.dir</name>
+<value>file:/usr/local/hadoop/hadoopdata/hdfs/namenode</value>
+</property>
+
+<property>
+<name>dfs.data.dir</name>
+<value>file:/usr/local/hadoop/hadoopdata/hdfs/datanode</value>
+</property>
+
+
+nano mapred-site.xml.template 
+<property>
+<name>mapreduce-framework.name</name>
+<value>yarn</value>
+</property>
+
+nano yarn-site.xml
+<property>
+<name>yarn.nodemanager.aux-services</name>
+<value>mapreduce_shuffle</value>
+</property>
+
+
+17) format de name node
+hdfs namenode -format
+
+18) start services
+start-dfs.sh
+start-yarn.sh
+jps
+
+19)
+hadoop fs -ls /
+(transfer)
+hadoop fs -put ./hadoop...
+hadoop fs -ls /
+hadoop -rm /hadoop
+
+20)
+stop-dfs.sh
+stop-yarn.sh
+
+

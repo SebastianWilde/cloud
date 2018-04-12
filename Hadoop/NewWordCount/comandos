@@ -1,0 +1,5 @@
+https://github.com/pagutierrez/tutorial-hadoop/blob/master/wordcount.md
+
+$hadoop jar WordCount.jar master.sd.WordCount /NewWordCount/Input /NewWordCount/Output
+$hadoop fs -cat /NewWordCount/Output/*
+

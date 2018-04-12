@@ -1,0 +1,43 @@
+Cargar archivos
+https://www.youtube.com/watch?v=6sK3LDY7Pp4
+///
+
+1)set hadoop classpath environment
+export HADOOP_CLASSPATH=$(hadoop classpath)
+
+2) Check
+echo $HADOOP_CLASSPATH
+
+3) create folder
+hadoop fs -mkdir /Nombre_folder
+
+hadoop fs -mkdir /Nombre_folder/Input
+
+4) Check
+localhost:50070
+
+5) Upload input
+hadoop fs -put direccion_del_archivo /Nombre_folder/Input
+
+6) Check
+localhost:50070
+
+7) Go to file of java program
+
+8) crear carpeta para almacenar las clases
+
+mkdir classes
+
+9) Compile java code
+javac -classpath ${HADOOP_CLASSPATH} -d carpeta_classes direccion_file.java
+
+10) Crear jar file
+jar -cvf nombre_archivo.jar -C classes/ .
+
+11) Ejectuar jar
+hadoop jar jar_File nombre_clase  /Direccion entrada /Direccion Salida
+
+
+
+
+
